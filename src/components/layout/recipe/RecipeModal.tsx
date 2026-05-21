@@ -1,5 +1,4 @@
-import React from 'react'
-import type { Recipe } from '../types.ts'
+import type { Recipe } from './recipe-type.data.ts'
 
 interface RecipeModalProps {
 	isOpen: boolean
@@ -8,12 +7,12 @@ interface RecipeModalProps {
 	ingredientsList: string[]
 }
 
-const RecipeModal: React.FC<RecipeModalProps> = ({
+const RecipeModal = ({
 	isOpen,
 	onClose,
 	recipe,
 	ingredientsList
-}) => {
+}: RecipeModalProps) => {
 	if (!isOpen) return null
 
 	const { dish, title, description, imageUrl } = recipe

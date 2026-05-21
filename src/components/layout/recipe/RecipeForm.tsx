@@ -1,13 +1,13 @@
 import type { ChangeEvent, SubmitEvent } from 'react'
-import React, { useState } from 'react'
-import { addRecipes } from '../api.ts'
-import type { Recipe } from '../types.ts'
+import { useState } from 'react'
+import { addRecipes } from '../../../api.ts'
+import type { Recipe } from './recipe-type.data.ts'
 
 interface RecipeFormProps {
 	onRecipeAdded: () => void
 }
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ onRecipeAdded }) => {
+const RecipeForm = ({ onRecipeAdded }: RecipeFormProps) => {
 	const [formData, setFormData] = useState<Recipe>({
 		dish: '',
 		title: '',

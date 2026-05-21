@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import type { Recipe } from '../types.ts'
+import { useEffect, useState } from 'react'
+import type { Recipe } from './recipe-type.data.ts'
 import RecipeModal from './RecipeModal.tsx'
 
-const RecipeCard: React.FC<Recipe> = props => {
+const RecipeCard = (props: Recipe) => {
 	const { dish, title, description, ingredients, imageUrl } = props
 	const [isOpen, setIsOpen] = useState(false)
 	const ingredientsList = ingredients.split('\n').filter(el => el.trim() !== '')
@@ -16,7 +16,7 @@ const RecipeCard: React.FC<Recipe> = props => {
 	}, [isOpen])
 
 	return (
-		<div className="bg-white border border-gray-300 rounded shadow-sm overflow-hidden max-w-sm w-full mx-auto flex flex-col justify-between h-150">
+		<div className="bg-white border border-gray-300 rounded shadow-sm overflow-hidden max-w-sm w-full mx-auto flex flex-col justify-between h-130">
 			<div className="overflow-hidden flex flex-col h-full">
 				<img
 					src={imageUrl}
