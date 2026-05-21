@@ -1,16 +1,14 @@
 import type { ChangeEvent, SubmitEvent } from 'react'
 import React, { useState } from 'react'
+import { addRecipes } from '../api.ts'
+import type { Recipe } from '../types.ts'
 
-interface RecipeFormData {
-	dish: string
-	title: string
-	description: string
-	ingredients: string
-	imageUrl: string
+interface RecipeFormProps {
+	onRecipeAdded: () => void
 }
 
-const RecipeForm: React.FC = () => {
-	const [formData, setFormData] = useState<RecipeFormData>({
+const RecipeForm: React.FC<RecipeFormProps> = ({ onRecipeAdded }) => {
+	const [formData, setFormData] = useState<Recipe>({
 		dish: '',
 		title: '',
 		description: '',
@@ -22,21 +20,35 @@ const RecipeForm: React.FC = () => {
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = e.target
-		setFormData(prev => ({
-			...prev,
-			[name]: value
-		}))
+		setFormData(prev => ({ ...prev, [name]: value }))
 	}
 
-	const handleSub = (e: SubmitEvent) => {
+	const handleSub = async (e: SubmitEvent) => {
 		e.preventDefault()
-		console.log(formData)
+
+		try {
+			const res = await addRecipes(formData)
+
+			if (res.status === 200) {
+				setFormData({
+					dish: '',
+					title: '',
+					description: '',
+					ingredients: '',
+					imageUrl: ''
+				})
+
+				onRecipeAdded()
+			}
+		} catch (e) {
+			console.log(e)
+		}
 	}
 
 	return (
 		<form
 			onSubmit={handleSub}
-			className="max-w-md mx-auto mt-5 p-5 bg-gray-50 border border-gray-300 rounded"
+			className="max-w-md mx-auto p-5 bg-white border border-gray-300 rounded shadow-sm"
 		>
 			<h2 className="text-xl font-bold text-gray-700 mb-4 text-center">
 				Добавить новый рецепт
@@ -61,6 +73,7 @@ const RecipeForm: React.FC = () => {
 						required
 					/>
 				</div>
+
 				<div className="flex flex-col">
 					<label
 						htmlFor="imageUrl"
@@ -75,7 +88,7 @@ const RecipeForm: React.FC = () => {
 						value={formData.imageUrl}
 						onChange={handleChange}
 						className="p-2 border border-gray-400 rounded"
-						placeholder="https://example.com/photo.jpg"
+						placeholder="https://image.com"
 						required
 					/>
 				</div>
@@ -111,7 +124,7 @@ const RecipeForm: React.FC = () => {
 						id="description"
 						value={formData.description}
 						onChange={handleChange}
-						className="p-2 border border-gray-400 rounded min-h-40 resize-none"
+						className="p-2 border border-gray-400 rounded min-h-32 resize-none"
 						placeholder="Пошаговый рецепт приготовления..."
 						required
 					/>
@@ -125,21 +138,19 @@ const RecipeForm: React.FC = () => {
 						Ингредиенты
 					</label>
 					<span className="text-xs text-gray-500 mb-1">
-						Каждый ингредиент вводите с новой строки и обязательно в таком
-						порядке: название ингредиента - количество
+						Каждый ингредиент с новой строки (Название - количество)
 					</span>
 					<textarea
 						name="ingredients"
 						id="ingredients"
 						value={formData.ingredients}
 						onChange={handleChange}
-						className="p-2 border border-gray-400 rounded min-h-40 resize-none"
-						placeholder={
-							'Соль - 1 ч.л.\nЧеснок - 2 зубчика\nЯйца - 3 шт\nМука - 200 г'
-						}
+						className="p-2 border border-gray-400 rounded min-h-32 resize-none"
+						placeholder={'Соль - 1 ч.л.\nЧеснок - 2 зубчика'}
 						required
 					/>
 				</div>
+
 				<button
 					type="submit"
 					className="w-full mt-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded"
