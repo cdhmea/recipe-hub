@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import type { Recipe } from '../types.ts'
+import RecipeModal from './RecipeModal.tsx'
 
-const RecipeCard: React.FC<Recipe> = ({
-	dish,
-	title,
-	description,
-	ingredients,
-	imageUrl
-}) => {
+const RecipeCard: React.FC<Recipe> = props => {
+	const { dish, title, description, ingredients, imageUrl } = props
+	const [isOpen, setIsOpen] = useState(false)
 	const ingredientsList = ingredients.split('\n').filter(el => el.trim() !== '')
+
+	useEffect(() => {
+		if (isOpen) {
+			document.body.style.overflow = 'hidden'
+		} else {
+			document.body.style.overflow = 'unset'
+		}
+	}, [isOpen])
 
 	return (
 		<div className="bg-white border border-gray-300 rounded shadow-sm overflow-hidden max-w-sm w-full mx-auto flex flex-col justify-between h-150">
@@ -63,10 +68,19 @@ const RecipeCard: React.FC<Recipe> = ({
 				</div>
 			</div>
 			<div className="p-4 border-t border-gray-200 bg-gray-50">
-				<button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm transition-colors">
+				<button
+					onClick={() => setIsOpen(true)}
+					className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded text-sm transition-colors"
+				>
 					Подробнее
 				</button>
 			</div>
+			<RecipeModal
+				isOpen={isOpen}
+				onClose={() => setIsOpen(false)}
+				recipe={props}
+				ingredientsList={ingredientsList}
+			/>
 		</div>
 	)
 }
