@@ -10,7 +10,14 @@ import type { Recipe } from '../pages/recipe/recipe-type.data.ts'
 
 function App() {
 	const [recipes, setRecipes] = useState<Recipe[]>([])
-	const [activeTab, setActiveTab] = useState<string>('recipes')
+	const [activeTab, setActiveTab] = useState(() => {
+		return localStorage.getItem('activeTab') || 'recipes'
+	})
+
+	const handleTabChange = (tab: string) => {
+		setActiveTab(tab)
+		localStorage.setItem('activeTab', tab)
+	}
 
 	const load = () => {
 		getRecipes()
@@ -26,7 +33,7 @@ function App() {
 		<div className="bg-gray-100 min-h-screen flex flex-col">
 			<Header
 				activeTab={activeTab}
-				setActiveTab={setActiveTab}
+				setActiveTab={handleTabChange}
 			/>
 			<main className="max-w-6xl w-full mx-auto p-5">
 				{activeTab === 'recipes' && (
