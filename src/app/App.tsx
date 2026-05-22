@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getRecipes } from './api.ts'
-import ConvertTab from './components/layout/convert/ConvertTab.tsx'
-import FavoritesTab from './components/layout/favorites/FavoritesTab.tsx'
-import Header from './components/layout/header/Header.tsx'
-import RecipeCard from './components/layout/recipe/RecipeCard.tsx'
-import RecipeForm from './components/layout/recipe/RecipeForm.tsx'
-import './index.css'
-import type { Recipe } from './types'
+import { getRecipes } from '../api.ts'
+import Header from '../components/header/Header.tsx'
+import '../index.css'
+import ConvertTab from '../pages/convert/ConvertTab.tsx'
+import FavoritesTab from '../pages/favorites/FavoritesTab.tsx'
+import RecipeCard from '../pages/recipe/RecipeCard.tsx'
+import RecipeForm from '../pages/recipe/RecipeForm.tsx'
+import type { Recipe } from '../pages/recipe/recipe-type.data.ts'
 
 function App() {
 	const [recipes, setRecipes] = useState<Recipe[]>([])

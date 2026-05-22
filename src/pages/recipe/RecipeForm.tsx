@@ -1,6 +1,6 @@
 import type { ChangeEvent, SubmitEvent } from 'react'
 import { useState } from 'react'
-import { addRecipes } from '../../../api.ts'
+import { addRecipes } from '../../api.ts'
 import type { Recipe } from './recipe-type.data.ts'
 
 interface RecipeFormProps {

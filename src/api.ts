@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Recipe } from '../src/types'
+import type { Recipe } from './pages/recipe/recipe-type.data'
 
 export async function getRecipes() {
 	const response = await axios.get<Recipe[]>('/api/recipes')
