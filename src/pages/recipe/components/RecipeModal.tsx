@@ -1,4 +1,4 @@
-import type { Recipe } from './recipe-type.data.ts'
+import type { Recipe } from '../recipe-type.data.ts'
 
 interface RecipeModalProps {
 	isOpen: boolean

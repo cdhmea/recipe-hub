@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Recipe } from './recipe-type.data.ts'
+import type { Recipe } from '../recipe-type.data.ts'
 import RecipeModal from './RecipeModal.tsx'
 
 const RecipeCard = (props: Recipe) => {
