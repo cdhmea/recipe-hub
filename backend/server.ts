@@ -1,9 +1,20 @@
+import 'dotenv/config'
 import fastify from 'fastify'
+import { Pool } from 'pg'
 
 const app = fastify()
 const port = 3000
 
+const pool = new Pool({
+	host: process.env.DB_HOST,
+	port: Number(process.env.DB_PORT),
+	user: process.env.DB_USER,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_NAME
+})
+
 interface Recipe {
+	id: number
 	dish: string
 	title: string
 	description: string
@@ -11,34 +22,34 @@ interface Recipe {
 	imageUrl: string
 }
 
-const recipes: Recipe[] = [
-	{
-		dish: 'Паста Карбонара',
-		title: 'Для настоящих мужиков',
-		ingredients: 'Спагетти - 1.5кг\nБекон - 3кг',
-		description: '1. Сварить пасту. 2. Съесть пасту...',
-		imageUrl:
-			'https://yastatic.net/naydex/yandex-search/8HdvKO638/533cf44Ev/XSWbhv721he1UpqLaHM5bJMdUtBXvJ3reAJRnWiLZIyjgfadrWUBwV9m15hGC6cmLqKM0hrinPPs-3BTgIL0MwFpKt72j5Mq_EPXgmB_KUjaOSKZW_yp3nQyCNRt213kTgg3VGT5tQy6mzp1f27SV3LK6d5LXmg'
-	},
-	{
-		dish: 'Пельмени',
-		title: 'Сочные, сливочные',
-		ingredients:
-			'Молоко - 250 мл\nЯйцо - 1 шт.\nРастительное масло - 1 ст.л.\nСоль - 1 ч.л.\nМука - 500-550 г.',
-		description:
-			'1. В миску высыпать муку, добавить яйцо, масло и соль. Перемешать. 2. Влить молоко и замесить тесто. Количество молока может варьироваться в зависимости от качества муки. 3. Сформировать из теста шар, накрыть пищевой плёнкой и оставить на столе на 40–45 минут для «созревания».',
-		imageUrl:
-			'https://img.povar.ru/uploads/1b/13/ff/4c/pelmeni_iz_baranini-883366.jpg'
+app.get('/api/recipes', async (_req, res) => {
+	try {
+		const result = await pool.query('SELECT * FROM recipes')
+		const formatted = result.rows.map(row => ({
+			id: row.id,
+			dish: row.dish,
+			title: row.title,
+			description: row.description,
+			ingredients: row.ingredients,
+			imageUrl: row.image_url
+		}))
+		res.send(formatted)
+	} catch (e) {
+		console.log(e)
 	}
-]
-
-app.get('/api/recipes', async () => {
-	return recipes
 })
 
 app.post('/api/recipes', async req => {
-	const newRecipe = req.body as Recipe
-	recipes.push(newRecipe)
+	try {
+		const { dish, title, description, ingredients, imageUrl } =
+			req.body as Recipe
+		await pool.query(
+			'INSERT INTO recipes (dish, title, description, ingredients, image_url) VALUES ($1, $2, $3, $4, $5)',
+			[dish, title, description, ingredients, imageUrl]
+		)
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 const start = async () => {
