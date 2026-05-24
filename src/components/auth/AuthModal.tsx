@@ -35,9 +35,9 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }: AuthModalProps) => {
 				onClose()
 			} else {
 				await registerUser(userData)
-				alert('Аккаунт успешно создан в зарегистрирован')
-				onLoginSuccess(trimmedUser)
-				onClose()
+				alert('Аккаунт успешно зарегистрирован')
+				setIsLoginMode(true)
+				setPassword('')
 			}
 
 			setUsername('')

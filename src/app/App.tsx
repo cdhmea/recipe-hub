@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { logoutUser } from '../api.ts'
 import AuthModal from '../components/auth/AuthModal.tsx'
 import Header from '../components/header/Header.tsx'
 import '../index.css'
@@ -25,9 +26,16 @@ function App() {
 		setIsAuthOpen(false)
 	}
 
-	const logout = () => {
-		setUser(null)
-		localStorage.removeItem('username')
+	const logout = async () => {
+		try {
+			await logoutUser()
+		} catch (e) {
+			console.log(e)
+		} finally {
+			setUser(null)
+			localStorage.removeItem('username')
+			window.location.reload()
+		}
 	}
 
 	return (

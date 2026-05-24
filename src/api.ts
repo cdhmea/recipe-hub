@@ -1,6 +1,8 @@
 import axios from 'axios'
 import type { Recipe } from './pages/recipe/recipe-type.data'
 
+axios.defaults.withCredentials = true
+
 interface Auth {
 	username: string
 	password: string
@@ -23,5 +25,10 @@ export async function registerUser(userData: Auth) {
 
 export async function loginUser(userData: Auth) {
 	const response = await axios.post('/api/login', userData)
+	return response
+}
+
+export async function logoutUser() {
+	const response = await axios.post('/api/logout')
 	return response
 }

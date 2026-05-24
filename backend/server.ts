@@ -1,9 +1,17 @@
+import fastifyCookie from '@fastify/cookie'
+import crypto from 'crypto'
 import 'dotenv/config'
 import fastify from 'fastify'
 import { Pool } from 'pg'
 
 const app = fastify()
 const port = 3000
+
+app.register(fastifyCookie, {
+	secret: 'super-secret'
+})
+
+const sessions: { [token: string]: string } = {}
 
 const pool = new Pool({
 	host: process.env.DB_HOST,
@@ -46,14 +54,35 @@ app.get('/api/recipes', async (_req, res) => {
 
 app.post('/api/recipes', async req => {
 	try {
+		const token = req.cookies.session_id
+
+		if (!token || !sessions[token]) {
+			return
+		}
+
+		const username = sessions[token]
+		const userResult = await pool.query(
+			'SELECT id FROM users WHERE username = $1',
+			[username]
+		)
+
+		if (userResult.rows.length === 0) {
+			return
+		}
+
+		const userId = userResult.rows[0].id
 		const { dish, title, description, ingredients, imageUrl } =
 			req.body as Recipe
+
 		await pool.query(
-			'INSERT INTO recipes (dish, title, description, ingredients, image_url) VALUES ($1, $2, $3, $4, $5)',
-			[dish, title, description, ingredients, imageUrl]
+			'INSERT INTO recipes (dish, title, description, ingredients, image_url, user_id) VALUES ($1, $2, $3, $4, $5, $6)',
+			[dish, title, description, ingredients, imageUrl, userId]
 		)
+
+		return
 	} catch (e) {
 		console.log(e)
+		return
 	}
 })
 
@@ -62,7 +91,7 @@ app.post('/api/register', async (req, res) => {
 		const { username, password } = req.body as Auth
 
 		if (!username || !password) {
-			return res.status(400).send({ message: 'Логин и пароль обязательны!' })
+			return res.status(400).send({ message: 'Логин и пароль обязательны' })
 		}
 
 		const userCheck = await pool.query(
@@ -70,7 +99,7 @@ app.post('/api/register', async (req, res) => {
 			[username]
 		)
 		if (userCheck.rows.length > 0) {
-			return res.status(400).send({ message: 'Этот логин уже занят!' })
+			return res.status(400).send({ message: 'Этот логин уже занят' })
 		}
 
 		await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [
@@ -78,7 +107,7 @@ app.post('/api/register', async (req, res) => {
 			password
 		])
 
-		return res.send({ message: 'Успешная регистрация!' })
+		return res.send({ message: 'Успешная регистрация' })
 	} catch (e) {
 		console.error(e)
 		return res.status(500).send({ message: 'Ошибка сервера при регистрации' })
@@ -90,7 +119,7 @@ app.post('/api/login', async (req, res) => {
 		const { username, password } = req.body as Auth
 
 		if (!username || !password) {
-			return res.status(400).send({ message: 'Заполните все поля!' })
+			return res.status(400).send({ message: 'Заполните все поля' })
 		}
 
 		const result = await pool.query('SELECT * FROM users WHERE username = $1', [
@@ -101,12 +130,39 @@ app.post('/api/login', async (req, res) => {
 			return res.status(400).send({ message: 'Неверный логин или пароль' })
 		}
 
-		const user = result.rows[0]
+		const sessionToken = 'sess_' + crypto.randomBytes(16).toString('hex')
+		sessions[sessionToken] = username
+		res.setCookie('session_id', sessionToken, {
+			path: '/',
+			httpOnly: true,
+			maxAge: 86400
+		})
 
-		return res.send({ username: user.username })
+		return res.send({ username })
 	} catch (e) {
 		console.error(e)
 		return res.status(500).send({ message: 'Ошибка сервера при входе' })
+	}
+})
+
+app.post('/api/logout', async (req, res) => {
+	try {
+		const token = req.cookies.session_id
+
+		if (token) {
+			delete sessions[token]
+		}
+
+		res.setCookie('session_id', '', {
+			path: '/',
+			maxAge: 0
+		})
+
+		return
+	} catch (e) {
+		console.error(e)
+		res.status(500)
+		return { message: 'Ошибка при выходе на сервере' }
 	}
 })
 

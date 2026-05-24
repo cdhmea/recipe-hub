@@ -11,7 +11,7 @@ CREATE TABLE recipes (
     ingredients TEXT NOT NULL,
     description TEXT NOT NULL,
     image_url TEXT,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE
+    user_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL
 );
 
 INSERT INTO users (id, username, password) VALUES 
