@@ -52,3 +52,28 @@ npm run server
 4. **DELETE** — удаление записи по `id`.
 5. **SELECT с JOIN** — связывание рецепта с автором (`users`) для вывода имени
    создателя.
+
+<details>
+<summary><b>Скрины выполнения sql запросов</b></summary>
+
+#### 1. SELECT с условием WHERE
+
+![SELECT WHERE](docs/db-results/1-select-where.png)
+
+#### 2. INSERT нового рецепта
+
+![INSERT](docs/db-results/2-insert.png)
+
+#### 3. UPDATE заголовка
+
+![UPDATE](docs/db-results/3-update.png)
+
+#### 4. DELETE записи
+
+![DELETE](docs/db-results/4-delete.png)
+
+#### 5. SELECT с JOIN
+
+![SELECT JOIN](docs/db-results/5-select-join.png)
+
+</details>

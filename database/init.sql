@@ -43,11 +43,11 @@ INSERT INTO recipes (id, dish, title, ingredients, description, image_url, user_
 SELECT * FROM recipes WHERE dish = 'Пельмени';
 
 INSERT INTO recipes (dish, title, ingredients, description, image_url, user_id) 
-VALUES ('Десерты', 'Кекс', 'Мука, сахар, какао', 'Смешать в кружке и в микроволновку', '', 1);
+VALUES ('Десерты', 'Кекс', 'Мука, сахар, какао', 'Смешать в кружке и в микроволновку', 'http://qwerty', 1);
 
 UPDATE recipes SET title = 'Карбонара для шефа' WHERE id = 1;
 
-DELETE FROM recipes WHERE id = 3;
+DELETE FROM recipes WHERE id = 2;
 
 SELECT r.id, r.title, r.dish, u.username 
 FROM recipes r
