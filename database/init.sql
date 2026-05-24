@@ -1,14 +1,23 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE recipes (
     id SERIAL PRIMARY KEY,
     dish VARCHAR(100) NOT NULL,
     title VARCHAR(150),
     ingredients TEXT NOT NULL,
     description TEXT NOT NULL,
-    image_url TEXT
+    image_url TEXT,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE
 );
 
+INSERT INTO users (id, username, password) VALUES 
+(1, 'maksim', '123');
 
-INSERT INTO recipes (id, dish, title, ingredients, description, image_url) VALUES
+INSERT INTO recipes (id, dish, title, ingredients, description, image_url, user_id) VALUES
 (
 1,
 'Паста Карбонара',
@@ -16,7 +25,8 @@ INSERT INTO recipes (id, dish, title, ingredients, description, image_url) VALUE
 'Спагетти - 1.5кг
 Бекон - 3кг',
 '1. Сварить пасту. 2. Съесть пасту...',
-'https://images.unsplash.com/photo-1612874742237-6526221588e3'
+'https://images.unsplash.com/photo-1612874742237-6526221588e3',
+1
 ),
 (
 2,
@@ -26,5 +36,6 @@ INSERT INTO recipes (id, dish, title, ingredients, description, image_url) VALUE
 Яйцо - 1 шт.
 Мука - 500г',
 '1. В миску высыпать муку, добавить яйцо, масло и соль. Перемешать. 2. Влить молоко и замесить тесто. 3. Сформировать из теста шар, накрыть плёнкой и оставить на 40 минут.',
-'https://img.povar.ru/uploads/1b/13/ff/4c/pelmeni_iz_baranini-883366.jpg'
+'https://img.povar.ru/uploads/1b/13/ff/4c/pelmeni_iz_baranini-883366.jpg',
+1
 );

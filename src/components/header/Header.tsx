@@ -5,9 +5,18 @@ import MobileMenu from './MobileMenu'
 interface HeaderProps {
 	activeTab: string
 	setActiveTab: (tab: string) => void
+	user: string | null
+	onOpenAuth: () => void
+	onLogout: () => void
 }
 
-const Header = ({ activeTab, setActiveTab }: HeaderProps) => {
+const Header = ({
+	activeTab,
+	setActiveTab,
+	user,
+	onOpenAuth,
+	onLogout
+}: HeaderProps) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 
 	const handleTabClick = (tab: string) => {
@@ -44,28 +53,29 @@ const Header = ({ activeTab, setActiveTab }: HeaderProps) => {
 				</nav>
 
 				<div className="flex items-center gap-2.5">
-					<button
-						onClick={() => alert('реализую чуть позже')}
-						className="flex items-center bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors"
-					>
-						<svg
-							className="w-4 h-4 text-gray-500"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							viewBox="0 0 24 24"
+					{user ? (
+						<div className="flex items-center gap-3">
+							<span className="hidden sm:inline text-sm font-bold text-gray-700">
+								👤 {user}
+							</span>
+							<button
+								onClick={onLogout}
+								className="text-xs font-bold text-red-500 hover:bg-red-50 px-2 py-1 rounded"
+							>
+								Выйти
+							</button>
+						</div>
+					) : (
+						<button
+							onClick={onOpenAuth}
+							className="flex items-center bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors"
 						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-							/>
-						</svg>
-						<span className="hidden sm:inline ml-2">Войти</span>
-					</button>
+							Войти
+						</button>
+					)}
 					<button
 						onClick={() => setIsMenuOpen(!isMenuOpen)}
-						className="sm:hidden flex items-center justify-center px-3 py-1.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
+						className="sm:hidden flex items-center justify-center px-3 py-1.5 rounded-lg border border-gray-300 bg-gray-50 text-gray-500"
 					>
 						<svg
 							className="w-4 h-4"
@@ -74,22 +84,19 @@ const Header = ({ activeTab, setActiveTab }: HeaderProps) => {
 							strokeWidth="2"
 							viewBox="0 0 24 24"
 						>
-							{isMenuOpen ? (
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M6 18L18 6M6 6l12 12"
-								/>
-							) : (
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M4 6h16M4 12h16M4 18h16"
-								/>
-							)}
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d={
+									isMenuOpen
+										? 'M6 18L18 6M6 6l12 12'
+										: 'M4 6h16M4 12h16M4 18h16'
+								}
+							/>
 						</svg>
 					</button>
 				</div>
+
 				<MobileMenu
 					isMenuOpen={isMenuOpen}
 					activeTab={activeTab}

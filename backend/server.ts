@@ -22,6 +22,11 @@ interface Recipe {
 	imageUrl: string
 }
 
+interface Auth {
+	username: string
+	password: string
+}
+
 app.get('/api/recipes', async (_req, res) => {
 	try {
 		const result = await pool.query('SELECT * FROM recipes')
@@ -49,6 +54,59 @@ app.post('/api/recipes', async req => {
 		)
 	} catch (e) {
 		console.log(e)
+	}
+})
+
+app.post('/api/register', async (req, res) => {
+	try {
+		const { username, password } = req.body as Auth
+
+		if (!username || !password) {
+			return res.status(400).send({ message: 'Логин и пароль обязательны!' })
+		}
+
+		const userCheck = await pool.query(
+			'SELECT * FROM users WHERE username = $1',
+			[username]
+		)
+		if (userCheck.rows.length > 0) {
+			return res.status(400).send({ message: 'Этот логин уже занят!' })
+		}
+
+		await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [
+			username,
+			password
+		])
+
+		return res.send({ message: 'Успешная регистрация!' })
+	} catch (e) {
+		console.error(e)
+		return res.status(500).send({ message: 'Ошибка сервера при регистрации' })
+	}
+})
+
+app.post('/api/login', async (req, res) => {
+	try {
+		const { username, password } = req.body as Auth
+
+		if (!username || !password) {
+			return res.status(400).send({ message: 'Заполните все поля!' })
+		}
+
+		const result = await pool.query('SELECT * FROM users WHERE username = $1', [
+			username
+		])
+
+		if (result.rows.length === 0 || result.rows[0].password !== password) {
+			return res.status(400).send({ message: 'Неверный логин или пароль' })
+		}
+
+		const user = result.rows[0]
+
+		return res.send({ username: user.username })
+	} catch (e) {
+		console.error(e)
+		return res.status(500).send({ message: 'Ошибка сервера при входе' })
 	}
 })
 
